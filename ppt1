@@ -1,0 +1,119 @@
+package geometrydash;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+public class GeometryDash {
+    /**
+     * Returns whether the given level can be completed using the given play.
+     * @param level is not null and not empty
+     * @param play is not null and not empty
+     * @return true if the play completes the level and false otherwise
+     */
+    public static boolean isSuccessfulPlay(String level, String play) {
+        // TODO: Implement this method
+        if(level.charAt(level.length()-1)=='^'){
+            return false;
+        }
+        int current=0;
+        for (int i=0;i<play.length();i++){
+            if(play.charAt(i)=='1'){
+                current+=1;
+            }
+            else if(play.charAt(i)=='2'){
+                current+=2;
+            }
+            else if(play.charAt(i)=='3'){
+                current+=3;
+            }
+            if(level.charAt(current)=='^'){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns the subset of plays which can complete the given level ending
+     * with the target resting energy
+     * @param level is not null and not empty
+     * @param possiblePlays is not null
+     * @param startingEnergy the energy at the start of the level
+     * @param targetRestingEnergy the minimum energy to end the level at
+     * @return a subset of {@code possiblePlays} which complete the level with
+     * {@code targetRestingEnergy} units of energy remaining
+     */
+    public static Set<String> successfulPlays(String level, Set<String> possiblePlays,
+                                              int startingEnergy, int targetRestingEnergy) {
+        // TODO: Implement this method
+        Set<String> sucPlays = new HashSet<>();
+        ArrayList<String> allPlays = new ArrayList<>();
+        allPlays.addAll(possiblePlays);
+        for (int p=0; p < allPlays.size()-1; p++){
+            String play = allPlays.get(p);
+            int energy = startingEnergy;
+            int current=0;
+            for (int i=0; i<play.length(); i++){
+                if(play.charAt(i)=='1'){
+                    current+=1;
+                    energy--;
+                }
+                else if(play.charAt(i)=='2'){
+                    current+=2;
+                    energy-=2;
+                }
+                else if(play.charAt(i)=='3'){
+                    current+=3;
+                    energy-=3;
+                }
+                else if(energy<3 && current!=level.length()-1 && play.charAt(i)=='0'){
+                    energy++;
+                }
+
+                if(level.charAt(current)=='^'){
+                    break;
+                }
+                else if(level.charAt(current)=='*'){
+                    current+=4;
+                }
+
+                if(current==level.length()-1 && energy>=targetRestingEnergy){
+                    sucPlays.add(allPlays.get(p));
+                }
+                //if the teleportation will place one outside the level
+                if(current>=level.length()){
+                    sucPlays.remove(allPlays.get(p));
+                }
+            }
+        }
+        return sucPlays;
+    }
+
+    /**
+     * Returns the shortest play that completes the given level
+     * @param level is not null and not empty
+     * @param startingEnergy the energy at the start of the level
+     * @param targetRestingEnergy the minimum energy to end the level at
+     * @return the shortest play that allows a player to complete the given level
+     * @throws UnplayableLevelException if no play can complete the level
+     */
+    public static String shortestPlay(String level, int startingEnergy, int targetRestingEnergy)
+            throws UnplayableLevelException {
+        // TODO: Implement this method
+        return null;
+    }
+
+    /**
+     * Returns the total number of plays which allow a player to complete the given level
+     * @param level is not null and not empty
+     * @param startingEnergy the energy at the start of the level
+     * @param targetRestingEnergy the minimum energy to end the level at
+     * @return the total number of plays which allow a player to complete the given level
+     * with target resting energy {@code targetRestingEnergy}
+     */
+    public static int numberOfPlays(String level, int startingEnergy, int targetRestingEnergy) {
+        // TODO: Implement this method
+        return -1;
+    }
+}
