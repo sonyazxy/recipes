@@ -2,6 +2,7 @@ package geometrydash;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class GeometryDash {
@@ -12,26 +13,21 @@ public class GeometryDash {
      * @return true if the play completes the level and false otherwise
      */
     public static boolean isSuccessfulPlay(String level, String play) {
-        // TODO: Implement this method
-        if(level.charAt(level.length()-1)=='^'){
+        int length = level.length();
+        int current_loc = 0;
+        if(level.charAt(0) == '^' || level.charAt(length-1) == '^' ){
             return false;
         }
-        int current=0;
-        for (int i=0;i<play.length();i++){
-            if(play.charAt(i)=='1'){
-                current+=1;
-            }
-            else if(play.charAt(i)=='2'){
-                current+=2;
-            }
-            else if(play.charAt(i)=='3'){
-                current+=3;
-            }
-            if(level.charAt(current)=='^'){
-                return false;
+        else{
+            for(int i = 0; i < play.length(); i++){
+                current_loc = current_loc + play.charAt(i)-'0';
+                if(level.charAt(current_loc) == '^'){
+                    return false;
+                }
             }
         }
         return true;
+
     }
 
     /**
@@ -46,48 +42,47 @@ public class GeometryDash {
      */
     public static Set<String> successfulPlays(String level, Set<String> possiblePlays,
                                               int startingEnergy, int targetRestingEnergy) {
+
         // TODO: Implement this method
-        Set<String> sucPlays = new HashSet<>();
-        ArrayList<String> allPlays = new ArrayList<>();
-        allPlays.addAll(possiblePlays);
-        for (int p=0; p < allPlays.size()-1; p++){
-            String play = allPlays.get(p);
-            int energy = startingEnergy;
-            int current=0;
-            for (int i=0; i<play.length(); i++){
-                if(play.charAt(i)=='1'){
-                    current+=1;
-                    energy--;
-                }
-                else if(play.charAt(i)=='2'){
-                    current+=2;
-                    energy-=2;
-                }
-                else if(play.charAt(i)=='3'){
-                    current+=3;
-                    energy-=3;
-                }
-                else if(energy<3 && current!=level.length()-1 && play.charAt(i)=='0'){
-                    energy++;
-                }
+        List<String> plays = new ArrayList<>(possiblePlays);
+        Set<String> success = new HashSet<>();
+        int energy = startingEnergy;
+        boolean fail = false;
 
-                if(level.charAt(current)=='^'){
-                    break;
-                }
-                else if(level.charAt(current)=='*'){
-                    current+=4;
-                }
+        int length = level.length();
+        boolean arrive = false;
 
-                if(current==level.length()-1 && energy>=targetRestingEnergy){
-                    sucPlays.add(allPlays.get(p));
+        for(int i = 0; i < plays.size();i++) {
+            if (!isSuccessfulPlay(level, plays.get(i))) {
+                fail = true;
+            }
+            else {
+                int current_loc = 0;
+                fail = false;
+                for (int j = 0; j < plays.get(i).length() && current_loc+plays.get(i).charAt(j) < length-1; j++) {
+                    if (plays.get(i).charAt(j) == '0') {
+                        energy++;
+                    }
+                    else if (level.charAt(current_loc + plays.get(i).charAt(j) - '0') == '*') {
+                        current_loc += 4 + plays.get(i).charAt(j) - '0';
+                    }
+                    else {
+                        energy -= plays.get(i).charAt(j) - '0';
+                        current_loc += plays.get(i).charAt(j) - '0';
+                        if (energy < targetRestingEnergy) {
+                            fail = true;
+                        }
+                    }
                 }
-                //if the teleportation will place one outside the level
-                if(current>=level.length()){
-                    sucPlays.remove(allPlays.get(p));
+                if(current_loc == length -1){
+                    arrive = true;
                 }
             }
+            if (!fail && arrive) {
+                success.add(plays.get(i));
+            }
         }
-        return sucPlays;
+        return success;
     }
 
     /**
