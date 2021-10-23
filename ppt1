@@ -59,19 +59,23 @@ public class GeometryDash {
             else {
                 int current_loc = 0;
                 fail = false;
-                for (int j = 0; j < plays.get(i).length() && current_loc+plays.get(i).charAt(j) < length-1; j++) {
+                for (int j = 0; j < plays.get(i).length() && !fail; j++) {
                     if (plays.get(i).charAt(j) == '0') {
                         energy++;
-                    }
-                    else if (level.charAt(current_loc + plays.get(i).charAt(j) - '0') == '*') {
-                        current_loc += 4 + plays.get(i).charAt(j) - '0';
                     }
                     else {
                         energy -= plays.get(i).charAt(j) - '0';
                         current_loc += plays.get(i).charAt(j) - '0';
+                        if(level.charAt(current_loc) == '*'){
+                            current_loc +=4;
+                        }
                         if (energy < targetRestingEnergy) {
                             fail = true;
                         }
+                    }
+
+                    if(current_loc > length-1){
+                        fail = true;
                     }
                 }
                 if(current_loc == length -1){
